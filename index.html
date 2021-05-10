@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image Viewer</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.9.0/viewer.css" integrity="sha512-HHYZlJVYgHVdz/pMWo63/ya7zc22sdXeqtNzv4Oz76V3gh7R+xPqbjNUp/NRmf0R85J++Yg6R0Kkmz+TGYHz8g==" crossorigin="anonymous" />
+  <style>
+    body {
+      margin: 0;
+    }
+    #app {
+      height: 100vh;
+      width: 100vw;
+    }
+    .search {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 999;
+      padding: 10px 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="search">
+    <input class="search-text" type="text" placeholder="请输入您要查看图片的地址">
+    <button class="search-btn">查看</button>
+  </div>
+  <div id="app">
+    <img id="view" src="" hidden>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.9.0/viewer.min.js" integrity="sha512-0goo56vbVLOJt9J6TMouBm2uE+iPssyO+70sdrT+J5Xbb5LsdYs31Mvj4+LntfPuV+VlK0jcvcinWQG5Hs3pOg==" crossorigin="anonymous"></script>
+  <script>
+    function init() {
+      const href = window.location.href
+      const query = new URLSearchParams(href.split('?').slice(1).join())
+      let imgURL = ""
+      if (query.has('image')) {
+        imgURL = query.get('image')
+      } else {
+        imgURL = "https://picsum.photos/seed/picsum/200/300"
+      }
+
+      setInputValue(imgURL)
+      setImageURL(imgURL)
+    }
+
+    function setImageURL(src) {
+      const viewElement = document.getElementById('view')
+      viewElement.setAttribute('src', src)
+
+      initViewer()
+    }
+
+    function initViewer() {
+      if (viewer) {
+        viewer.destroy()
+        viewer = null
+        initViewer()
+      } else {
+        viewer = new Viewer(
+          document.getElementById('view'),
+          {
+            inline: true,
+            title: false,
+            toolbar: {
+              zoomIn: 4,
+              zoomOut: 4,
+              oneToOne: 4,
+              reset: 4,
+              rotateLeft: 4,
+              rotateRight: 4,
+            },
+            navbar: false,
+            transition: false,
+          }
+        )
+      }
+    }
+
+    function btnClick() {
+      const inputEl = document.querySelector('.search-text')
+      const inputValue = inputEl.value
+      setImageURL(inputValue)
+    }
+
+    function setInputValue(value) {
+      const inputEl = document.querySelector('.search-text')
+      inputEl.value = value
+    }
+
+    let viewer = null
+    init()
+    document.querySelector('.search-btn').addEventListener('click', btnClick)
+  </script>
+</body>
+</html>
